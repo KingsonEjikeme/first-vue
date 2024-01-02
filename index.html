@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue Basics</title>
+    <script src="https://unpkg.com/vue@3"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <navbar :pages="pages" :active-page="activePage" :navlink-click="(index)=>activePage=index"></navbar>
+    <page-viewer :page="pages[activePage]"></page-viewer>
+
+    <script>
+      let app = Vue.createApp({
+        computed: {
+          navbarClasses() {
+            return {
+              "navbar-light": !this.isDarkMode,
+              "navbar-dark": this.isDarkMode,
+              "bg-light": !this.isDarkMode,
+              "bg-dark": this.isDarkMode,
+            };
+          },
+        },
+        data() {
+          return {
+            activePage: 0,
+            theme: "dark",
+            pages: [
+              {
+                link: { text: "Home", url: "/home" },
+                title: "Home Page",
+                detail: "Now the vue details",
+              },
+              {
+                link: { text: "About", url: "/about" },
+                title: "About Page",
+                detail: "Now the vue details",
+              },
+              {
+                link: { text: "Contact", url: "/contact" },
+                title: "Contact Page",
+                detail: "Now the vue details",
+              },
+            ],
+          };
+        },
+        methods: {
+          changeTheme() {
+            let theme = "light";
+
+            if (this.theme == "light") {
+              theme = "dark";
+            }
+            this.theme = theme;
+          },
+        },
+      });
+      app.component("page-viewer", {
+        props: ["page"],
+        template: `
+          <div id="content" class="ms-10">
+        <h2>{{page.title}}</h2>
+        <p>{{page.detail}}</p>
+      </div>
+          `,
+      });
+
+      app.component("navbar", {
+        props: ['pages', 'activePage', 'navlinkClick'],
+        template: `
+          <nav
+        :class="[\`navbar-\${theme}\`, \`bg-\${theme}\`, \`navbar\`, \`navbar-expand-lg\`]"
+      >
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Navbar</a>
+          <ul class="navbar-nav">
+            <li class="nav-item" v-for="(page, index) in pages" :key="index">
+              <a
+                class="nav-link"
+                :class="{active: activePage === index}"
+                aria-current="page"
+                :href="page.link.url"
+                :title="\`This link goes to the \${page.link.text} page\`"
+                @click.prevent="navlinkClick(index)"
+                >{{page.link.text}}</a
+              >
+            </li>
+          </ul>
+          <form class="d-flex">
+            <button class="btn btn-primary" @click.prevent="changeTheme()">
+              Darkmode
+            </button>
+          </form>
+        </div>
+      </nav>
+          `,
+          data() {
+            return{
+                theme: "dark"
+            }
+          },
+          methods: {
+          changeTheme() {
+            let theme = "light";
+
+            if (this.theme == "light") {
+              theme = "dark";
+            }
+            this.theme = theme;
+          },
+        },
+      });
+
+      app.mount("body");
+    </script>
+  </body>
+</html>
